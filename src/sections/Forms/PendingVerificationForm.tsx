@@ -1,36 +1,33 @@
 import * as Yup from "yup";
 import {
-  Link as RouterLink,
   useNavigate,
-  useOutletContext
+  // useOutletContext
 } from "react-router-dom";
 import { useFormik, Form, FormikProvider } from "formik";
 import { useState, useEffect, useContext } from "react";
 // material
-import { Stack, TextField, Alert, Snackbar } from "@mui/material";
+import { Stack, TextField, 
+  // Alert 
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // component
-// import useLoginService from '../../../services/apiServices/useLoginService';
-import Iconify from "../../components/Iconify";
-import useApiService from "../../services/ApiService";
+// import useApiService from "../../services/ApiService";
 import { UserContext } from "../../context/userContext";
-// import { UserContext } from "src/context/userContext";
-// import dummyUsers from "src/_mock/dummyUsersData";
-// import { Encrypt, decryptData } from '../../../encryptionDecryption';
+
 // ----------------------------------------------------------------------
 
 export default function PendingVerificationForm() {
   const navigate = useNavigate();
-  const { verifyotp, sendotp } = useApiService();
+  // const { verifyotp, sendotp } = useApiService();
   const [showAlert, setShowAlert] = useState(false);
-  const [severity, setSeverity] = useState(undefined) as any;
-  const [severityMessage, setSeverityMessage] = useState("");
+  // const [severity, setSeverity] = useState(undefined) as any;
+  // const [severityMessage, setSeverityMessage] = useState("");
 
-  const {
-    flow,
-    setOpenSnackbar,
-    setSnackbarMessage
-  } = useOutletContext() as any;
+  // const {
+  //   flow,
+  //   setOpenSnackbar,
+  //   setSnackbarMessage
+  // } = useOutletContext() as any;
 
   const { userData, setUserDetails } = useContext(UserContext) as any;
 
@@ -42,7 +39,7 @@ export default function PendingVerificationForm() {
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(10, "Must be exactly 10 digits")
       .max(10, "Must be exactly 10 digits")
-      .required("Please enter phone number added during account creation")
+      .required("Please enter phone number added during account creation")
   });
 
   const formik = useFormik({
@@ -81,7 +78,7 @@ export default function PendingVerificationForm() {
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
         <Stack sx={{ mb: 3, display: showAlert ? "block" : "none" }}>
-          <Alert severity={severity}>{severityMessage}</Alert>
+          {/* <Alert severity={severity}>{severityMessage}</Alert> */}
         </Stack>
         <Stack spacing={3} sx={{ my: 2 }}>
           <TextField
@@ -98,7 +95,7 @@ export default function PendingVerificationForm() {
             fullWidth
             autoComplete="phoneNumber"
             type="text"
-            label="Phone Number"
+            label="Phone Number"
             {...getFieldProps("phoneNumber")}
             error={Boolean(touched.phoneNumber && errors.phoneNumber)}
             helperText={touched.phoneNumber && errors.phoneNumber}

@@ -44,7 +44,7 @@ export default function RegisterForm() {
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
       ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords don't match!")
+      .oneOf([Yup.ref("password"), ""], "Passwords don't match!")
       .required("Required")
   });
 
@@ -73,7 +73,7 @@ export default function RegisterForm() {
           });
           navigate("/verify", { replace: true });
         }
-      } catch (err) {
+      } catch (err:any) {
         // console.log("error", error);
         setShowAlert(true);
         setSeverity("error");

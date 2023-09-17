@@ -36,7 +36,7 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
-  const { userData } = useContext(UserContext) as any;
+  const { userData, setUserDetails } = useContext(UserContext) as any;
 
   const handleOpen = (event: any) => {
     setOpen(event.currentTarget);
@@ -48,6 +48,8 @@ export default function AccountPopover() {
 
   const handleLogout = () => {
     setOpen(null);
+    setUserDetails({ email: "", phoneNumber: "" });
+    sessionStorage.removeItem("token");
     navigate("/login");
   };
 
@@ -55,20 +57,20 @@ export default function AccountPopover() {
     <>
       <IconButton
         onClick={handleOpen}
-        // sx={{
-        //   p: 0,
-        //   ...(open && {
-        //     "&:before": {
-        //       zIndex: 1,
-        //       content: "''",
-        //       width: "100%",
-        //       height: "100%",
-        //       borderRadius: "50%",
-        //       position: "absolute",
-        //       bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8)
-        //     }
-        //   })
-        // }}
+      // sx={{
+      //   p: 0,
+      //   ...(open && {
+      //     "&:before": {
+      //       zIndex: 1,
+      //       content: "''",
+      //       width: "100%",
+      //       height: "100%",
+      //       borderRadius: "50%",
+      //       position: "absolute",
+      //       bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8)
+      //     }
+      //   })
+      // }}
       >
         <Avatar src={avatar} alt="photoURL" />
       </IconButton>

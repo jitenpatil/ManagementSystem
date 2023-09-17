@@ -20,8 +20,8 @@ const UploadDocument: React.FC = () => {
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
 
   const validationSchema = yup.object({
-    customerName: yup.string().required("Naam likh de chodu"),
-    address: yup.string().required("Order kiske pass bheju gandu"),
+    customerName: yup.string().required("Name is required"),
+    address: yup.string().required("Address is required"),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     pincode: yup.number().required("Pincode is required"),
@@ -120,7 +120,7 @@ const UploadDocument: React.FC = () => {
                 component="h6"
                 style={{ fontWeight: "bold" }}
               >
-                Personal Details
+                Personal Details
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
@@ -145,7 +145,7 @@ const UploadDocument: React.FC = () => {
             <Grid item xs={12} sm={6} md={6}>
               <TextField
                 id="phone"
-                label="Phone Number"
+                label="Phone Number"
                 variant="outlined"
                 name="phone"
                 fullWidth
@@ -176,7 +176,7 @@ const UploadDocument: React.FC = () => {
                 component="h6"
                 style={{ fontWeight: "bold" }}
               >
-                Document Details
+                Document Details
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={6}>
@@ -247,7 +247,7 @@ const UploadDocument: React.FC = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" color="primary">
-                    *Please upload PDF document
+                    *Please upload PDF document
                   </Typography>
                 </Grid>
               </>
@@ -283,7 +283,7 @@ const UploadDocument: React.FC = () => {
                 component="h6"
                 style={{ fontWeight: "bold" }}
               >
-                Delivery Address
+                Delivery Address
               </Typography>
             </Grid>
             <Grid item xs={12}>

@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Link as RouterLink,
   useNavigate,
@@ -63,12 +63,18 @@ export default function LoginForm() {
         const response = await login(request);
         console.log(response);
         if (response.data.status === "Success") {
+          // debugger;
           setUserDetails({
-            email: formik.values.email
+            email: response.data?.email,
+            phoneNumber: response.data?.phone
           });
-          navigate("/dashboard", { replace: true });
+          sessionStorage.setItem("token", JSON.stringify({
+            email: response.data?.email,
+            phoneNumber: response.data?.phone
+          }));
+          navigate("/upload-document", { replace: true });
         }
-      } catch (err) {
+      } catch (err:any) {
         // console.log("error", err.response);
         setShowAlert(true);
         setSeverity("error");

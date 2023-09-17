@@ -1,16 +1,13 @@
 import * as Yup from "yup";
 import { useState, useContext } from "react";
 import {
-  Link as RouterLink,
   useNavigate,
   useOutletContext
 } from "react-router-dom";
 import { useFormik, Form, FormikProvider } from "formik";
 // material
 import {
-  Link,
   Stack,
-  Checkbox,
   TextField,
   IconButton,
   InputAdornment,
@@ -47,7 +44,7 @@ export default function ResetPasswordForm() {
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
       ),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords don't match!")
+      .oneOf([Yup.ref("password"), ""], "Passwords don't match!")
       .required("Required")
   });
 
@@ -68,7 +65,7 @@ export default function ResetPasswordForm() {
         const response = await resetpassword(request);
         if (response.data.status === "Success") {
           setOpenSnackbar(true);
-          setSnackbarMessage("Password reset successful");
+          setSnackbarMessage("Password reset successful");
           navigate("/login", { replace: true });
         }
       } catch (error) {
@@ -83,15 +80,14 @@ export default function ResetPasswordForm() {
   const {
     errors,
     touched,
-    values,
     isSubmitting,
     handleSubmit,
     getFieldProps
   } = formik;
 
-  const handleShowPassword = () => {
-    setShowPassword((show) => !show);
-  };
+  // const handleShowPassword = () => {
+  //   setShowPassword((show) => !show);
+  // };
 
   return (
     <FormikProvider value={formik}>

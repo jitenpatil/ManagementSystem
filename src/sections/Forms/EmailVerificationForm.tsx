@@ -71,7 +71,7 @@ export default function EmailVerificationForm() {
             navigate("/login", { replace: true });
           }
         }
-      } catch (err) {
+      } catch (err:any) {
         // console.log("error", error);
         setShowAlert(true);
         setSeverity("error");
@@ -105,7 +105,7 @@ export default function EmailVerificationForm() {
           setSnackbarMessage("Otp sent successfully!");
         }
       }
-    } catch (err) {
+    } catch (err:any) {
       // console.log("error", error);
       setShowAlert(true);
       setSeverity("error");
@@ -141,7 +141,7 @@ export default function EmailVerificationForm() {
             fullWidth
             autoComplete="otp"
             type="text"
-            label="Enter OTP"
+            label="Enter OTP"
             {...getFieldProps("otp")}
             error={Boolean(touched.otp && errors.otp)}
             helperText={touched.otp && errors.otp}
@@ -168,7 +168,7 @@ export default function EmailVerificationForm() {
             handleSendOtp();
           }}
         >
-          Resend OTP
+          Resend OTP
         </LoadingButton>
       </Form>
     </FormikProvider>
