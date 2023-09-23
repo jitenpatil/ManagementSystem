@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }: any) => {
     const authValues = useAppSelector((state: any) => state.auth);
     const location = useLocation();
 
-    if (!authValues.userAuthInfo.email && !authValues.userAuthInfo.phoneNumber) {
+    if (!authValues.userAuthInfo.isLoggedIn) {
         return <Navigate to="/login" state={{ from: location }} replace />
     }
     return children

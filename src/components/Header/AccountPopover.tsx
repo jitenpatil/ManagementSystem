@@ -52,7 +52,7 @@ export default function AccountPopover() {
 
   const handleLogout = () => {
     setOpen(null);
-    dispatch(setUserAuthInfo({email: "", customerName: "", phoneNumber: "", isAdmin:false} as any))
+    dispatch(setUserAuthInfo({email: "", customerName: "", phoneNumber: "", isAdmin:false, isLoggedIn: false} as any))
     navigate("/login");
   };
 

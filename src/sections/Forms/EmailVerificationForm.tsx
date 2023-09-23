@@ -37,7 +37,7 @@ export default function EmailVerificationForm() {
   const [isOtpSending, setIsOtpSending] = useState(false);
 
   const EmailVerificationSchema = Yup.object().shape({
-    otp: Yup.string().required("Please enter OTP")
+    otp: Yup.string().required("Please enter OTP")
     // phoneNumber: Yup.string()
     //   .matches(/^[0-9]+$/, "Must be only digits")
     //   .min(10, "Must be exactly 10 digits")
@@ -56,7 +56,7 @@ export default function EmailVerificationForm() {
       setShowAlert(false);
       try {
         let request = {
-          email: authValues.userAuthInfoauthValues.userAuthInfo.email,
+          email: authValues.userAuthInfo.email,
           phone: authValues.userAuthInfo.phoneNumber,
           otp: values.otp
         };
@@ -103,7 +103,7 @@ export default function EmailVerificationForm() {
         if (response.data.status === "Success") {
           //Snackbar
           setOpenSnackbar(true);
-          setSnackbarMessage("Otp sent successfully!");
+          setSnackbarMessage("Otp sent successfully!");
         }
       }
     } catch (err:any) {
@@ -116,9 +116,9 @@ export default function EmailVerificationForm() {
     }
   };
 
-  useEffect(() => {
-    handleSendOtp();
-  }, [authValues.userAuthInfo.email, authValues.userAuthInfo.phoneNumber]);
+  // useEffect(() => {
+  //   //handleSendOtp();
+  // }, [authValues.userAuthInfo.email, authValues.userAuthInfo.phoneNumber]);
 
   return (
     <FormikProvider value={formik}>

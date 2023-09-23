@@ -1,6 +1,6 @@
 import { NavLink as RouterLink } from "react-router-dom";
 // @mui
-import { Box, List, ListItemText } from "@mui/material";
+import { Box, List, ListItemText, Typography } from "@mui/material";
 //
 // @mui
 import { styled } from "@mui/material/styles";
@@ -50,11 +50,13 @@ function NavItem({ item }: any) {
         }
       }}
     >
-      <StyledNavItemIcon>{iconMap[icon]}</StyledNavItemIcon>
+        <StyledNavItemIcon>{iconMap[icon]}</StyledNavItemIcon>
+      
+        <ListItemText disableTypography primary={title} />
+        <Typography fontSize={11}>
+          {info}
+        </Typography>
 
-      <ListItemText disableTypography primary={title} />
-
-      {info && info}
     </StyledNavItem>
   );
 }

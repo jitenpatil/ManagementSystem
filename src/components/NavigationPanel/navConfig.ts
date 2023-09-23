@@ -5,7 +5,8 @@ const navConfig = [
     icon: "AdminPanelSettingsIcon"
   },
   {
-    title: "upload",
+    title: "Print",
+    info: "Blackbook/VC",
     path: "/upload-document",
     icon: "UploadFileIcon"
   }

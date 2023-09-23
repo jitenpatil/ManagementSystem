@@ -72,7 +72,8 @@ export default function LoginForm() {
           let res = await dispatch(setUserAuthInfo({
             email: response.data?.email,
             phoneNumber: response.data?.phone,
-            customerName: response.data?.customerName
+            customerName: response.data?.customerName,
+            isLoggedIn: true
           } as any));
 
           if(res)

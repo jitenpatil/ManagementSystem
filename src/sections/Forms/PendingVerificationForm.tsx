@@ -54,14 +54,9 @@ export default function PendingVerificationForm() {
     validationSchema: PendingVerificationSchema,
 
     onSubmit: async (values: any) => {
-      // setUserDetails({
-      //   // email: values.email,
-      //   ...userData.userDetails,
-      //   phoneNumber: values.phoneNumber
-      // });
 
       dispatch(setUserAuthInfo({
-        ...authValues,
+        ...authValues.userAuthInfo,
         phoneNumber: values.phoneNumber,
       } as any));
       navigate("/verify");

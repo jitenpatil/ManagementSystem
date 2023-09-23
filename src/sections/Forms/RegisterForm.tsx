@@ -49,7 +49,7 @@ export default function RegisterForm() {
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
       ),
     customerName: Yup.string()
-    .matches(/^[a-zA-Z][a-zA-Z\\s]+$/, "Must be only alphabets")
+    .matches(/^[a-zA-Z ]+$/, "Must be only alphabets")
     .required("Name is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), ""], "Passwords don't match!")
@@ -62,7 +62,7 @@ export default function RegisterForm() {
       email: "",
       password: "",
       confirmPassword: "",
-      customerName: ""
+      customerName: "",
     },
     validationSchema: RegisterSchema,
     onSubmit: async (values: any) => {
@@ -70,18 +70,13 @@ export default function RegisterForm() {
         let request = {
           phone: values.phoneNumber,
           email: values.email,
-          password: values.password
+          password: values.password,
+          customerName: values.customerName,
+          isAdmin:false
         };
         const response = await signup(request);
         if (response.data.status === "Success") {
           setFlow("ACCOUNT_CREATION");
-
-          // setUserDetails({
-          //   ...userData.userDetails,
-          //   email: values.email,
-          //   phoneNumber: values.phoneNumber,
-          //   customerName: values.customerName
-          // });
           dispatch(setUserAuthInfo({
             email: values.email,
             phoneNumber: values.phoneNumber,

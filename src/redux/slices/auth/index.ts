@@ -7,7 +7,8 @@ export const authSlice = createSlice({
             email: "",
             phoneNumber: "",
             customerName: "",
-            isAdmin: false
+            isAdmin: false,
+            isLoggedIn: false
         }
 
     } as any,
