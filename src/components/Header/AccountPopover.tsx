@@ -13,7 +13,9 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import avatar from "../../images/avatar.jpg";
-import { UserContext } from "../../context/userContext";
+// import { UserContext } from "../../context/userContext";
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
@@ -36,7 +38,9 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
-  const { userData, setUserDetails } = useContext(UserContext) as any;
+
+  const authValues = useAppSelector((state: any) => state.auth);
+  const dispatch = useAppDispatch();
 
   const handleOpen = (event: any) => {
     setOpen(event.currentTarget);
@@ -48,8 +52,7 @@ export default function AccountPopover() {
 
   const handleLogout = () => {
     setOpen(null);
-    setUserDetails({ email: "", phoneNumber: "" });
-    sessionStorage.removeItem("token");
+    dispatch(setUserAuthInfo({email: "", customerName: "", phoneNumber: "", isAdmin:false} as any))
     navigate("/login");
   };
 
@@ -95,11 +98,11 @@ export default function AccountPopover() {
         }}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
-          {/* <Typography variant="subtitle2" noWrap>
-            {"Jiril"}
-          </Typography> */}
+          <Typography variant="subtitle2" noWrap>
+            {authValues.userAuthInfo.customerName}
+          </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
-            {userData.userDetails.email}
+            {authValues.userAuthInfo.email}
           </Typography>
         </Box>
 

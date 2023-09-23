@@ -13,19 +13,20 @@ import { LoadingButton } from "@mui/lab";
 // import useLoginService from '../../../services/apiServices/useLoginService';
 import Iconify from "../../components/Iconify";
 import useApiService from "../../services/ApiService";
-import { UserContext } from "../../context/userContext";
-// import { UserContext } from "src/context/userContext";
-// import dummyUsers from "src/_mock/dummyUsersData";
-// import { Encrypt, decryptData } from '../../../encryptionDecryption';
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 // ----------------------------------------------------------------------
 
 export default function EmailVerificationForm() {
   const navigate = useNavigate();
-  const { userData } = useContext(UserContext) as any;
   const { verifyotp, sendotp } = useApiService();
   const [showAlert, setShowAlert] = useState(false);
   const [severity, setSeverity] = useState(undefined) as any;
   const [severityMessage, setSeverityMessage] = useState("");
+
+  const authValues = useAppSelector((state: any) => state.auth);
+    const dispatch = useAppDispatch();
 
   const {
     flow,
@@ -55,8 +56,8 @@ export default function EmailVerificationForm() {
       setShowAlert(false);
       try {
         let request = {
-          email: userData.userDetails.email,
-          phone: userData.userDetails.phoneNumber,
+          email: authValues.userAuthInfoauthValues.userAuthInfo.email,
+          phone: authValues.userAuthInfo.phoneNumber,
           otp: values.otp
         };
         const response = await verifyotp(request);
@@ -93,10 +94,10 @@ export default function EmailVerificationForm() {
     setIsOtpSending(true);
     setShowAlert(false);
     try {
-      if (userData.userDetails.email && userData.userDetails.phoneNumber) {
+      if (authValues.userAuthInfo.email && authValues.userAuthInfo.phoneNumber) {
         let request = {
-          email: userData.userDetails.email,
-          phone: userData.userDetails.phoneNumber
+          email: authValues.userAuthInfo.email,
+          phone: authValues.userAuthInfo.phoneNumber
         };
         const response = await sendotp(request);
         if (response.data.status === "Success") {
@@ -117,7 +118,7 @@ export default function EmailVerificationForm() {
 
   useEffect(() => {
     handleSendOtp();
-  }, [userData.userDetails.email, userData.userDetails.phoneNumber]);
+  }, [authValues.userAuthInfo.email, authValues.userAuthInfo.phoneNumber]);
 
   return (
     <FormikProvider value={formik}>

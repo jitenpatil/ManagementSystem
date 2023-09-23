@@ -9,12 +9,11 @@ import { useContext, useEffect } from "react";
 // material
 import { Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 // component
-// import useLoginService from '../../../services/apiServices/useLoginService';
-import Iconify from "../../components/Iconify";
-import { UserContext } from "../../context/userContext";
-// import dummyUsers from "src/_mock/dummyUsersData";
-// import { Encrypt, decryptData } from '../../../encryptionDecryption';
+
 // ----------------------------------------------------------------------
 
 export default function ForgetPasswordForm() {
@@ -23,7 +22,8 @@ export default function ForgetPasswordForm() {
   // const { getUserLogin } = useLoginService();
   const { setFlow } = useOutletContext() as any;
 
-  const { userData, setUserDetails } = useContext(UserContext) as any;
+  const authValues = useAppSelector((state: any) => state.auth);
+  const dispatch = useAppDispatch();
 
   const ForgetPasswordSchema = Yup.object().shape({
     email: Yup.string().required("Email ID is required"),
@@ -31,7 +31,7 @@ export default function ForgetPasswordForm() {
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(10, "Must be exactly 10 digits")
       .max(10, "Must be exactly 10 digits")
-      .required("Phone Number is required")
+      .required("Phone Number is required")
   });
 
   const formik = useFormik({
@@ -43,10 +43,15 @@ export default function ForgetPasswordForm() {
 
     onSubmit: async (values: any) => {
       setFlow("FORGET_PASSWORD");
-      setUserDetails({
-        email: values.email,
-        phoneNumber: values.phoneNumber
-      });
+      // setUserDetails({
+      //   email: values.email,
+      //   phoneNumber: values.phoneNumber
+      // });
+
+      dispatch(setUserAuthInfo({
+        email:  values.email,
+        phoneNumber: values.phoneNumber,
+      } as any));
       navigate("/verify");
     }
   });
@@ -61,10 +66,10 @@ export default function ForgetPasswordForm() {
   } = formik;
 
   useEffect(() => {
-    if (userData.userDetails.email) {
-      formik.setFieldValue("email", userData.userDetails.email);
+    if (authValues.userAuthInfo.email) {
+      formik.setFieldValue("email", authValues.userAuthInfo.email);
     }
-  }, [userData.userDetails.email]);
+  }, [authValues.userAuthInfo.email]);
   return (
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>

@@ -21,8 +21,10 @@ import { LoadingButton } from "@mui/lab";
 // component
 // import useLoginService from '../../../services/apiServices/useLoginService';
 import Iconify from "../../components/Iconify";
-import { UserContext } from "../../context/userContext";
 import useApiService from "../../services/ApiService";
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 
 // import dummyUsers from "src/_mock/dummyUsersData";
 // import { Encrypt, decryptData } from '../../../encryptionDecryption';
@@ -38,7 +40,10 @@ export default function LoginForm() {
   const { setFlow } = useOutletContext() as any;
   const { login } = useApiService();
 
-  const { setUserDetails } = useContext(UserContext) as any;
+  // const { setUserDetails } = useContext(UserContext) as any;
+  const authValues = useAppSelector((state: any) => state.auth);
+  console.log("AUTH", authValues);
+  const dispatch = useAppDispatch();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
@@ -63,18 +68,15 @@ export default function LoginForm() {
         const response = await login(request);
         console.log(response);
         if (response.data.status === "Success") {
-          // debugger;
-          setUserDetails({
+
+          let res = await dispatch(setUserAuthInfo({
             email: response.data?.email,
             phoneNumber: response.data?.phone,
             customerName: response.data?.customerName
-          });
-          sessionStorage.setItem("token", JSON.stringify({
-            email: response.data?.email,
-            phoneNumber: response.data?.phone,
-            customerName: response.data?.customerName
-          }));
-          navigate("/upload-document", { replace: true });
+          } as any));
+
+          if(res)
+            navigate("/upload-document", { replace: true });
         }
       } catch (err:any) {
         // console.log("error", err.response);
@@ -83,9 +85,10 @@ export default function LoginForm() {
         setSeverityMessage(err.response.data.message);
 
         if (err.response.data.message === "Account not verified") {
-          setUserDetails({
-            email: formik.values.email
-          });
+
+          dispatch(setUserAuthInfo({
+            email: formik.values.email,
+          } as any));
         }
       }
     }

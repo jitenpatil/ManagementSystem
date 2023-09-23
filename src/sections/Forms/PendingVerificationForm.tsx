@@ -10,9 +10,12 @@ import { Stack, TextField,
   // Alert 
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 // component
 // import useApiService from "../../services/ApiService";
-import { UserContext } from "../../context/userContext";
+
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +32,8 @@ export default function PendingVerificationForm() {
   //   setSnackbarMessage
   // } = useOutletContext() as any;
 
-  const { userData, setUserDetails } = useContext(UserContext) as any;
+  const authValues = useAppSelector((state: any) => state.auth);
+    const dispatch = useAppDispatch();
 
   const PendingVerificationSchema = Yup.object().shape({
     email: Yup.string()
@@ -50,11 +54,16 @@ export default function PendingVerificationForm() {
     validationSchema: PendingVerificationSchema,
 
     onSubmit: async (values: any) => {
-      setUserDetails({
-        // email: values.email,
-        ...userData.userDetails,
-        phoneNumber: values.phoneNumber
-      });
+      // setUserDetails({
+      //   // email: values.email,
+      //   ...userData.userDetails,
+      //   phoneNumber: values.phoneNumber
+      // });
+
+      dispatch(setUserAuthInfo({
+        ...authValues,
+        phoneNumber: values.phoneNumber,
+      } as any));
       navigate("/verify");
     }
   });
@@ -69,10 +78,10 @@ export default function PendingVerificationForm() {
   } = formik;
 
   useEffect(() => {
-    if (userData.userDetails.email) {
-      formik.setFieldValue("email", userData.userDetails.email);
+    if (authValues.userAuthInfo.email) {
+      formik.setFieldValue("email", authValues.userAuthInfo.email);
     }
-  }, [userData.userDetails.email]);
+  }, [authValues.userAuthInfo.email]);
 
   return (
     <FormikProvider value={formik}>

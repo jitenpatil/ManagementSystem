@@ -15,13 +15,11 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // component
-// import useLoginService from '../../../services/apiServices/useLoginService';
-import Iconify from "../../components/Iconify";
-import { UserContext } from "../../context/userContext";
-import useApiService from "../../services/ApiService";
 
-// import dummyUsers from "src/_mock/dummyUsersData";
-// import { Encrypt, decryptData } from '../../../encryptionDecryption';
+import Iconify from "../../components/Iconify";
+import useApiService from "../../services/ApiService";
+import { useAppSelector } from '../../redux/hooks';
+
 // ----------------------------------------------------------------------
 
 export default function ResetPasswordForm() {
@@ -30,11 +28,12 @@ export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const { resetpassword } = useApiService();
 
-  const { userData } = useContext(UserContext) as any;
   const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
   const [showAlert, setShowAlert] = useState(false);
   const [severity, setSeverity] = useState(undefined) as any;
   const [severityMessage, setSeverityMessage] = useState("");
+
+  const authValues = useAppSelector((state: any) => state.auth);
 
   const ResetPasswordSchema = Yup.object().shape({
     password: Yup.string()
@@ -59,7 +58,7 @@ export default function ResetPasswordForm() {
       setShowAlert(false);
       try {
         let request = {
-          email: userData.userDetails.email,
+          email: authValues.userAuthInfo.email,
           password: formik.values.password
         };
         const response = await resetpassword(request);

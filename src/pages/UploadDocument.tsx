@@ -12,8 +12,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
-import { UserContext } from "../context/userContext"
 import useApiService from "../services/ApiService";
+import { useAppSelector } from '../redux/hooks';
+// import { setUserAuthInfo } from '../redux/slices/auth';
 
 
 const UploadDocument: React.FC = () => {
@@ -21,8 +22,9 @@ const UploadDocument: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
-  const { userData } = useContext(UserContext) as any;
   const { storefile } = useApiService();
+
+  const authValues = useAppSelector((state: any) => state.auth);
 
   const validationSchema = yup.object({
     customerName: yup.string().required("Name is required"),
@@ -90,11 +92,11 @@ const UploadDocument: React.FC = () => {
   }) as any;
 
   useEffect(() => {
-    formik.setFieldValue("customerName", userData.userDetails.customerName);
-    formik.setFieldValue("phone", userData.userDetails.phoneNumber);
-    formik.setFieldValue("email", userData.userDetails.email);
+    formik.setFieldValue("customerName", authValues.userAuthInfo.customerName);
+    formik.setFieldValue("phone", authValues.userAuthInfo.phoneNumber);
+    formik.setFieldValue("email", authValues.userAuthInfo.email);
 
-  }, [userData]);
+  }, [authValues]);
 
   const handleClick = () => {
     fileRef.current.click();

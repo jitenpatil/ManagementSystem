@@ -15,25 +15,30 @@ import { LoadingButton } from "@mui/lab";
 // component
 import Iconify from "../../components/Iconify";
 import useApiService from "../../services/ApiService";
-import { UserContext } from "../../context/userContext";
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { setUserAuthInfo } from '../../redux/slices/auth';
 
 // ----------------------------------------------------------------------
 
 export default function RegisterForm() {
   const navigate = useNavigate();
   const { signup } = useApiService();
-  const { userData, setUserDetails } = useContext(UserContext) as any;
   const [severity, setSeverity] = useState(undefined) as any;
   const [severityMessage, setSeverityMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { setFlow } = useOutletContext() as any;
+
+  const authValues = useAppSelector((state: any) => state.auth);
+  const dispatch = useAppDispatch();
+
+
   const RegisterSchema = Yup.object().shape({
     phoneNumber: Yup.string()
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(10, "Must be exactly 10 digits")
       .max(10, "Must be exactly 10 digits")
-      .required("Phone Number is required"),
+      .required("Phone Number is required"),
     email: Yup.string()
       .email("Email must be a valid email address")
       .required("Email is required"),
@@ -70,13 +75,18 @@ export default function RegisterForm() {
         const response = await signup(request);
         if (response.data.status === "Success") {
           setFlow("ACCOUNT_CREATION");
-          debugger
-          setUserDetails({
-            ...userData.userDetails,
+
+          // setUserDetails({
+          //   ...userData.userDetails,
+          //   email: values.email,
+          //   phoneNumber: values.phoneNumber,
+          //   customerName: values.customerName
+          // });
+          dispatch(setUserAuthInfo({
             email: values.email,
             phoneNumber: values.phoneNumber,
             customerName: values.customerName
-          });
+          } as any));
           navigate("/verify", { replace: true });
         }
       } catch (err:any) {
