@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 //
 import { Header } from "../components/Header";
 import { NavigationPanel } from "../components/NavigationPanel";
-
+import { Snackbar, Alert } from "@mui/material";
 // ----------------------------------------------------------------------
 
 const APP_BAR_MOBILE = 64;
@@ -34,17 +34,47 @@ const Main = styled("div")(({ theme }) => ({
 
 const CommonLayout: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
 
   return (
+    <>
     <StyledRoot>
       <Header onOpenNav={() => setOpen(true)} />
 
       <NavigationPanel openNav={open} onCloseNav={() => setOpen(false)} />
 
       <Main>
-        <Outlet />
+        <Outlet context={{ setSnackbarMessage, setOpenSnackbar }}/>
       </Main>
     </StyledRoot>
+    <Snackbar
+      open={openSnackbar}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      autoHideDuration={3000}
+      onClose={handleClose}
+    >
+      <Alert
+        onClose={handleClose}
+        severity="success"
+        sx={{ width: "100%" }}
+        // sx={{ backgroundColor: "rgb(56, 142, 60)", color: "black" }}
+      >
+      </Alert>
+    </Snackbar>
+  </>
   );
 };
 

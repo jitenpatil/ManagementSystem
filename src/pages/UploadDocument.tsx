@@ -6,8 +6,12 @@ import {
   Button,
   Container,
   MenuItem,
-  Typography
+  Typography,
+  Modal
 } from "@mui/material";
+import {
+  useOutletContext
+} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -22,9 +26,14 @@ const UploadDocument: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
+  const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
   const { storefile } = useApiService();
 
   const authValues = useAppSelector((state: any) => state.auth);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const validationSchema = yup.object({
     customerName: yup.string().required("Name is required"),
@@ -59,7 +68,7 @@ const UploadDocument: React.FC = () => {
       email: "",
       phone: "",
       address: "",
-      landmark:"",
+      landmark: "",
       city: "",
       state: "",
       pincode: "",
@@ -69,7 +78,7 @@ const UploadDocument: React.FC = () => {
     onSubmit: async (values: any) => {
       console.log("Values", values);
       //check file
-      
+
       if (!values.pdfFile) {
         setFileError("Please select document to be uploaded");
         return;
@@ -83,10 +92,12 @@ const UploadDocument: React.FC = () => {
         // debugger;
         const response = await storefile(request);
         if (response.data.status === "Success") {
-
+          setSnackbarMessage(response.data.message);
+          setOpenSnackbar(true);
+          handleOpen();
         }
-      } catch (err:any) {
-        console.log("Error",err);
+      } catch (err: any) {
+        console.log("Error", err);
       }
     }
   }) as any;
@@ -127,7 +138,17 @@ const UploadDocument: React.FC = () => {
     }
   };
 
-  console.log("FOmi", formik.values)
+  const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: 5
+  };
 
   return (
     <>
@@ -406,6 +427,23 @@ const UploadDocument: React.FC = () => {
           </Grid>
         </form>
       </Container>
+      <Modal
+        keepMounted
+        open={false}
+        onClose={handleClose}
+      >
+        <Box sx={style}>
+          <Typography id="keep-mounted-modal-title" variant="h6" component="h2">
+            
+          </Typography>
+          <Button variant="contained" sx={{width:"100%"}}>
+            Proceed to Pay
+          </Button>
+          <Button variant="contained" sx={{width:"100%"}}>
+            Cancel
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 };
