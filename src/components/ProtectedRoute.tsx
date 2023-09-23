@@ -18,7 +18,8 @@ const ProtectedRoute = ({ children }: any) => {
             //debugger
             setUserDetails({
                 email: sessionData.email,
-                phoneNumber: sessionData.phoneNumber
+                phoneNumber: sessionData.phoneNumber,
+                customerName: sessionData.customerName
             })
         }
     }, [sessionData]);

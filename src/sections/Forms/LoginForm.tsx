@@ -66,11 +66,13 @@ export default function LoginForm() {
           // debugger;
           setUserDetails({
             email: response.data?.email,
-            phoneNumber: response.data?.phone
+            phoneNumber: response.data?.phone,
+            customerName: response.data?.customerName
           });
           sessionStorage.setItem("token", JSON.stringify({
             email: response.data?.email,
-            phoneNumber: response.data?.phone
+            phoneNumber: response.data?.phone,
+            customerName: response.data?.customerName
           }));
           navigate("/upload-document", { replace: true });
         }

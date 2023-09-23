@@ -4,17 +4,27 @@ import axios from "axios";
 
 function useApiService() {
   // const { userData } = useContext(UserContext) as any;
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+  const apiKey = process.env.REACT_APP_API_KEY;
 
   const config = {
     headers: {
       // "Content-Type": "multipart/form-data",
-      "x-api-key": "s28X4ojglR9yk06xQtLNd4UQlHfsUY8g39ILcaYk"
+      "x-api-key": apiKey
+    }
+  };
+
+  //Upload API headers
+  const uploadConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "x-api-key": apiKey
     }
   };
 
   const login = async (req: any) => {
     return await axios.post(
-      `https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/user/login`,
+      `${apiBaseUrl}/user/login`,
       req,
       config
     );
@@ -22,7 +32,7 @@ function useApiService() {
 
   const signup = async (req: any) => {
     return await axios.post(
-      `https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/user/sign-up`,
+      `${apiBaseUrl}/user/sign-up`,
       req,
       config
     );
@@ -30,7 +40,7 @@ function useApiService() {
 
   const resetpassword = async (req: any) => {
     return await axios.post(
-      `https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/user/reset-password`,
+      `${apiBaseUrl}/user/reset-password`,
       req,
       config
     );
@@ -38,7 +48,7 @@ function useApiService() {
 
   const sendotp = async (req: any) => {
     return await axios.post(
-      `https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/user/send-otp`,
+      `${apiBaseUrl}/user/send-otp`,
       req,
       config
     );
@@ -46,9 +56,17 @@ function useApiService() {
 
   const verifyotp = async (req: any) => {
     return await axios.post(
-      `https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/user/verify-otp`,
+      `${apiBaseUrl}/user/verify-otp`,
       req,
       config
+    );
+  };
+
+  const storefile = async (req: any) => {
+    return await axios.post(
+      `${apiBaseUrl}/print/store-file`,
+      req,
+      uploadConfig
     );
   };
 
@@ -57,7 +75,8 @@ function useApiService() {
     signup,
     resetpassword,
     sendotp,
-    verifyotp
+    verifyotp,
+    storefile
   };
 }
 

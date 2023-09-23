@@ -3,7 +3,8 @@ import React, { createContext, useReducer, PropsWithChildren } from "react";
 export const initialValues = {
   userDetails: {
     email: "",
-    phoneNumber: ""
+    phoneNumber: "",
+    customerName: ""
   }
 };
 

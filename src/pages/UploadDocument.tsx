@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -12,16 +12,27 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { UserContext } from "../context/userContext"
+import useApiService from "../services/ApiService";
+
 
 const UploadDocument: React.FC = () => {
   const fileRef = useRef(null) as any;
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
+  const { userData } = useContext(UserContext) as any;
+  const { storefile } = useApiService();
 
   const validationSchema = yup.object({
     customerName: yup.string().required("Name is required"),
+    // collegeName: yup.string().when('type', {
+    //   is: "blackbook",
+    //   then: yup.string().required('College Name is required'),
+    //   otherwise: yup.string(),
+    // }),
     address: yup.string().required("Address is required"),
+    landmark: yup.string().required("Landmark is required"),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     pincode: yup.number().required("Pincode is required"),
@@ -39,46 +50,51 @@ const UploadDocument: React.FC = () => {
   const formik = useFormik({
     initialValues: {
       customerName: "",
+      collegeName: "",
       type: "blackbook",
       color: "color",
-      pages: 0,
+      pages: 10,
       email: "",
       phone: "",
       address: "",
+      landmark:"",
       city: "",
       state: "",
       pincode: "",
-      data: ""
+      pdfFile: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values: any) => {
       console.log("Values", values);
       //check file
-      if (!values.data) {
+      
+      if (!values.pdfFile) {
         setFileError("Please select document to be uploaded");
         return;
       }
 
       try {
-        const { data } = await axios.post(
-          "https://yni14izx17.execute-api.ap-south-1.amazonaws.com/v1/storedata/user",
-          {
-            ...values,
-            color: values.color === "color" ? true : false
-          },
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              "x-api-key": "s28X4ojglR9yk06xQtLNd4UQlHfsUY8g39ILcaYk"
-            }
-          }
-        );
-        console.log("Data:", data);
-      } catch (e) {
-        console.log(e);
+        let request = {
+          ...values,
+          color: values.color === "color" ? true : false
+        };
+        // debugger;
+        const response = await storefile(request);
+        if (response.data.status === "Success") {
+
+        }
+      } catch (err:any) {
+        console.log("Error",err);
       }
     }
   }) as any;
+
+  useEffect(() => {
+    formik.setFieldValue("customerName", userData.userDetails.customerName);
+    formik.setFieldValue("phone", userData.userDetails.phoneNumber);
+    formik.setFieldValue("email", userData.userDetails.email);
+
+  }, [userData]);
 
   const handleClick = () => {
     fileRef.current.click();
@@ -88,7 +104,7 @@ const UploadDocument: React.FC = () => {
     setFileName("");
     setShowFileUploadContainer(false);
     fileRef.current = null;
-    formik.setFieldValue("data", "");
+    formik.setFieldValue("pdfFile", "");
     formik.setFieldValue("pages", 0);
   };
 
@@ -99,7 +115,7 @@ const UploadDocument: React.FC = () => {
     const fileExtension = fileName.split(".").pop();
     const allowedExtension = ["pdf"] as any;
     if (allowedExtension.includes(fileExtension)) {
-      formik.setFieldValue("data", event.currentTarget.files[0]);
+      formik.setFieldValue("pdfFile", event.currentTarget.files[0]);
       setShowFileUploadContainer(true);
       setFileName(fileName);
     } else {
@@ -108,6 +124,8 @@ const UploadDocument: React.FC = () => {
       );
     }
   };
+
+  console.log("FOmi", formik.values)
 
   return (
     <>
@@ -127,7 +145,7 @@ const UploadDocument: React.FC = () => {
               <TextField
                 id="customerName"
                 name="customerName"
-                label="Customer Name"
+                label="Customer Name"
                 variant="outlined"
                 fullWidth
                 value={formik.values.customerName}
@@ -142,6 +160,22 @@ const UploadDocument: React.FC = () => {
                 }
               />
             </Grid>
+            {formik.values.type === "blackbook" &&
+              <Grid item xs={12} sm={6} md={6}>
+                <TextField
+                  id="collegeName"
+                  label="College Name"
+                  variant="outlined"
+                  name="collegeName"
+                  fullWidth
+                  value={formik.values.collegeName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.collegeName && Boolean(formik.errors.collegeName)}
+                  helperText={formik.touched.collegeName && formik.errors.collegeName}
+                />
+              </Grid>
+            }
             <Grid item xs={12} sm={6} md={6}>
               <TextField
                 id="phone"
@@ -283,7 +317,7 @@ const UploadDocument: React.FC = () => {
                 component="h6"
                 style={{ fontWeight: "bold" }}
               >
-                Delivery Address
+                {formik.values.type === "blackbook" ? "College Address" : "Delivery Address"}
               </Typography>
             </Grid>
             <Grid item xs={12}>

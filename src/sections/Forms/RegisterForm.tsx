@@ -43,6 +43,9 @@ export default function RegisterForm() {
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and One Special Case Character"
       ),
+    customerName: Yup.string()
+    .matches(/^[a-zA-Z][a-zA-Z\\s]+$/, "Must be only alphabets")
+    .required("Name is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), ""], "Passwords don't match!")
       .required("Required")
@@ -53,7 +56,8 @@ export default function RegisterForm() {
       phoneNumber: "",
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      customerName: ""
     },
     validationSchema: RegisterSchema,
     onSubmit: async (values: any) => {
@@ -66,10 +70,12 @@ export default function RegisterForm() {
         const response = await signup(request);
         if (response.data.status === "Success") {
           setFlow("ACCOUNT_CREATION");
+          debugger
           setUserDetails({
             ...userData.userDetails,
             email: values.email,
-            phoneNumber: values.phoneNumber
+            phoneNumber: values.phoneNumber,
+            customerName: values.customerName
           });
           navigate("/verify", { replace: true });
         }
@@ -111,6 +117,18 @@ export default function RegisterForm() {
               {...getFieldProps("phoneNumber")}
               error={Boolean(touched.phoneNumber && errors.phoneNumber)}
               helperText={touched.phoneNumber && errors.phoneNumber}
+            />
+          </Stack>
+
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              fullWidth
+              autoComplete="customerName"
+              type="text"
+              label="Name"
+              {...getFieldProps("customerName")}
+              error={Boolean(touched.customerName && errors.customerName)}
+              helperText={touched.customerName && errors.customerName}
             />
           </Stack>
 
