@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import {
   Link as RouterLink,
   useNavigate,
-  useOutletContext
+  useOutletContext,
 } from "react-router-dom";
 import { useFormik, Form, FormikProvider } from "formik";
 import { useState, useEffect, useContext } from "react";
@@ -10,12 +10,9 @@ import { useState, useEffect, useContext } from "react";
 import { Stack, TextField, Alert, Snackbar } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // component
-// import useLoginService from '../../../services/apiServices/useLoginService';
-import Iconify from "../../components/Iconify";
 import useApiService from "../../services/ApiService";
 
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { setUserAuthInfo } from '../../redux/slices/auth';
+import { useAppSelector } from "../../redux/hooks";
 // ----------------------------------------------------------------------
 
 export default function EmailVerificationForm() {
@@ -26,18 +23,14 @@ export default function EmailVerificationForm() {
   const [severityMessage, setSeverityMessage] = useState("");
 
   const authValues = useAppSelector((state: any) => state.auth);
-    const dispatch = useAppDispatch();
 
-  const {
-    flow,
-    setOpenSnackbar,
-    setSnackbarMessage
-  } = useOutletContext() as any;
+  const { flow, setOpenSnackbar, setSnackbarMessage } =
+    useOutletContext() as any;
 
   const [isOtpSending, setIsOtpSending] = useState(false);
 
   const EmailVerificationSchema = Yup.object().shape({
-    otp: Yup.string().required("Please enter OTP")
+    otp: Yup.string().required("Please enter OTP"),
     // phoneNumber: Yup.string()
     //   .matches(/^[0-9]+$/, "Must be only digits")
     //   .min(10, "Must be exactly 10 digits")
@@ -47,7 +40,7 @@ export default function EmailVerificationForm() {
 
   const formik = useFormik({
     initialValues: {
-      otp: ""
+      otp: "",
       // phoneNumber: ""
     },
     validationSchema: EmailVerificationSchema,
@@ -58,7 +51,7 @@ export default function EmailVerificationForm() {
         let request = {
           email: authValues.userAuthInfo.email,
           phone: authValues.userAuthInfo.phoneNumber,
-          otp: values.otp
+          otp: values.otp,
         };
         const response = await verifyotp(request);
         if (response.data.status === "Success") {
@@ -72,32 +65,29 @@ export default function EmailVerificationForm() {
             navigate("/login", { replace: true });
           }
         }
-      } catch (err:any) {
+      } catch (err: any) {
         // console.log("error", error);
         setShowAlert(true);
         setSeverity("error");
         setSeverityMessage(err.response.data.message);
       }
-    }
+    },
   });
 
-  const {
-    errors,
-    touched,
-    values,
-    isSubmitting,
-    handleSubmit,
-    getFieldProps
-  } = formik;
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } =
+    formik;
 
   const handleSendOtp = async () => {
     setIsOtpSending(true);
     setShowAlert(false);
     try {
-      if (authValues.userAuthInfo.email && authValues.userAuthInfo.phoneNumber) {
+      if (
+        authValues.userAuthInfo.email &&
+        authValues.userAuthInfo.phoneNumber
+      ) {
         let request = {
           email: authValues.userAuthInfo.email,
-          phone: authValues.userAuthInfo.phoneNumber
+          phone: authValues.userAuthInfo.phoneNumber,
         };
         const response = await sendotp(request);
         if (response.data.status === "Success") {
@@ -106,7 +96,7 @@ export default function EmailVerificationForm() {
           setSnackbarMessage("Otp sent successfully!");
         }
       }
-    } catch (err:any) {
+    } catch (err: any) {
       // console.log("error", error);
       setShowAlert(true);
       setSeverity("error");

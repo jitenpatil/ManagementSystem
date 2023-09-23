@@ -1,4 +1,4 @@
-import { useRef, useState, useContext, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -7,20 +7,18 @@ import {
   Container,
   MenuItem,
   Typography,
-  Modal
+  Modal,
 } from "@mui/material";
-import {
-  useOutletContext
-} from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
 import useApiService from "../services/ApiService";
-import { useAppSelector } from '../redux/hooks';
+import { useAppSelector } from "../redux/hooks";
+// import * as pdfjsLib from "pdfjs-dist/build/pdf";
 // import { getDocument } from 'pdfjs';
 // import { setUserAuthInfo } from '../redux/slices/auth';
-
 
 const UploadDocument: React.FC = () => {
   const fileRef = useRef(null) as any;
@@ -55,7 +53,7 @@ const UploadDocument: React.FC = () => {
     phone: yup
       .number()
       .min(10, "Phone Number should be of 10 digits")
-      .required("Phone Number is required")
+      .required("Phone Number is required"),
     // file: yup.object().required("File is required")
   });
 
@@ -88,7 +86,7 @@ const UploadDocument: React.FC = () => {
       try {
         let request = {
           ...values,
-          color: values.color === "color" ? true : false
+          color: values.color === "color" ? true : false,
         };
         // debugger;
         const response = await storefile(request);
@@ -100,14 +98,13 @@ const UploadDocument: React.FC = () => {
       } catch (err: any) {
         console.log("Error", err);
       }
-    }
+    },
   }) as any;
 
   useEffect(() => {
     formik.setFieldValue("customerName", authValues.userAuthInfo.customerName);
     formik.setFieldValue("phone", authValues.userAuthInfo.phoneNumber);
     formik.setFieldValue("email", authValues.userAuthInfo.email);
-
   }, [authValues]);
 
   const handleClick = () => {
@@ -122,22 +119,22 @@ const UploadDocument: React.FC = () => {
     formik.setFieldValue("pages", 0);
   };
 
-  const handleFile = (e:any) => {
+  const handleFile = (e: any) => {
     const content = e.target.result;
-    console.log('file content',  content)
+    console.log("file content", content);
     // You can set content in state and show it in render.
     var typedarray = new Uint8Array(e.target.result);
 
     // const task = pdfjsLib.getDocument(typedarray);
-    // task.promise.then((pdf:any)=>{
+    // task.promise.then((pdf: any) => {
     //   console.log(pdf?.numPages);
-    // })
-  }
+    // });
+  };
 
   const handleFileChange = (event: any) => {
     setFileError("");
     const file = event.currentTarget.files[0];
-    console.log(file);
+    // console.log(file);
     const fileName = file.name;
     const fileExtension = fileName.split(".").pop();
     const allowedExtension = ["pdf"] as any;
@@ -150,8 +147,6 @@ const UploadDocument: React.FC = () => {
       let fileData = new FileReader();
       fileData.onloadend = handleFile;
       fileData.readAsText(file);
-
-
     } else {
       setFileError(
         `${fileExtension} not allowed. Please upload document in PDF format`
@@ -160,15 +155,15 @@ const UploadDocument: React.FC = () => {
   };
 
   const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
-    borderRadius: 5
+    borderRadius: 5,
   };
 
   return (
@@ -204,7 +199,7 @@ const UploadDocument: React.FC = () => {
                 }
               />
             </Grid>
-            {formik.values.type === "blackbook" &&
+            {formik.values.type === "blackbook" && (
               <Grid item xs={12} sm={6} md={6}>
                 <TextField
                   id="collegeName"
@@ -215,11 +210,16 @@ const UploadDocument: React.FC = () => {
                   value={formik.values.collegeName}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={formik.touched.collegeName && Boolean(formik.errors.collegeName)}
-                  helperText={formik.touched.collegeName && formik.errors.collegeName}
+                  error={
+                    formik.touched.collegeName &&
+                    Boolean(formik.errors.collegeName)
+                  }
+                  helperText={
+                    formik.touched.collegeName && formik.errors.collegeName
+                  }
                 />
               </Grid>
-            }
+            )}
             <Grid item xs={12} sm={6} md={6}>
               <TextField
                 id="phone"
@@ -316,7 +316,7 @@ const UploadDocument: React.FC = () => {
                         marginTop: "3px",
                         marginRight: "14px",
                         marginBottom: 0,
-                        marginLeft: "14px"
+                        marginLeft: "14px",
                       }}
                     >
                       {fileError}
@@ -340,7 +340,7 @@ const UploadDocument: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "10px",
-                    mt: "10px"
+                    mt: "10px",
                   }}
                 >
                   <Typography variant="subtitle1">{fileName}</Typography>
@@ -361,7 +361,9 @@ const UploadDocument: React.FC = () => {
                 component="h6"
                 style={{ fontWeight: "bold" }}
               >
-                {formik.values.type === "blackbook" ? "College Address" : "Delivery Address"}
+                {formik.values.type === "blackbook"
+                  ? "College Address"
+                  : "Delivery Address"}
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -448,19 +450,17 @@ const UploadDocument: React.FC = () => {
           </Grid>
         </form>
       </Container>
-      <Modal
-        keepMounted
-        open={false}
-        onClose={handleClose}
-      >
+      <Modal keepMounted open={false} onClose={handleClose}>
         <Box sx={style}>
-          <Typography id="keep-mounted-modal-title" variant="h6" component="h2">
-            
-          </Typography>
-          <Button variant="contained" sx={{width:"100%"}}>
+          <Typography
+            id="keep-mounted-modal-title"
+            variant="h6"
+            component="h2"
+          ></Typography>
+          <Button variant="contained" sx={{ width: "100%" }}>
             Proceed to Pay
           </Button>
-          <Button variant="contained" sx={{width:"100%"}}>
+          <Button variant="contained" sx={{ width: "100%" }}>
             Cancel
           </Button>
         </Box>
