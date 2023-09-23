@@ -83,7 +83,7 @@ const AuthLayout = () => {
                   variant="h5"
                   sx={{ px: 5, mb: 4, textAlign: "center" }}
                 >
-                  Hi, Welcome to
+                  Welcome
                 </Typography>
                 <Box
                   sx={{
@@ -99,7 +99,6 @@ const AuthLayout = () => {
                   variant="h4"
                   sx={{ px: 5, mt: 1, textAlign: "center", fontWeight: "bold" }}
                 >
-                  Vinayak Prints
                 </Typography>
               </Box>
             </Box>
