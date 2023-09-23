@@ -18,6 +18,7 @@ import * as yup from "yup";
 import axios from "axios";
 import useApiService from "../services/ApiService";
 import { useAppSelector } from '../redux/hooks';
+// import { getDocument } from 'pdfjs';
 // import { setUserAuthInfo } from '../redux/slices/auth';
 
 
@@ -121,16 +122,36 @@ const UploadDocument: React.FC = () => {
     formik.setFieldValue("pages", 0);
   };
 
+  const handleFile = (e:any) => {
+    const content = e.target.result;
+    console.log('file content',  content)
+    // You can set content in state and show it in render.
+    var typedarray = new Uint8Array(e.target.result);
+
+    // const task = pdfjsLib.getDocument(typedarray);
+    // task.promise.then((pdf:any)=>{
+    //   console.log(pdf?.numPages);
+    // })
+  }
+
   const handleFileChange = (event: any) => {
     setFileError("");
-    console.log(event.currentTarget.files[0]);
-    const fileName = event.currentTarget.files[0].name;
+    const file = event.currentTarget.files[0];
+    console.log(file);
+    const fileName = file.name;
     const fileExtension = fileName.split(".").pop();
     const allowedExtension = ["pdf"] as any;
     if (allowedExtension.includes(fileExtension)) {
-      formik.setFieldValue("pdfFile", event.currentTarget.files[0]);
+      formik.setFieldValue("pdfFile", file);
       setShowFileUploadContainer(true);
       setFileName(fileName);
+
+      //Count No of pages
+      let fileData = new FileReader();
+      fileData.onloadend = handleFile;
+      fileData.readAsText(file);
+
+
     } else {
       setFileError(
         `${fileExtension} not allowed. Please upload document in PDF format`
