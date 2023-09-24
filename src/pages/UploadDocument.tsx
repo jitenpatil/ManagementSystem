@@ -16,16 +16,37 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import useApiService from "../services/ApiService";
 import { useAppSelector } from "../redux/hooks";
-import * as pdfjs from "pdfjs-dist/build/pdf";
-import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+// import * as pdfjs from "pdfjs-dist/build/pdf";
+// import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
+import { Document, Page, pdfjs } from "react-pdf";
 // import { getDocument } from 'pdfjs';
-// import { setUserAuthInfo } from '../redux/slices/auth';
+// import { setUserAuthInfo } from '../redux/slices/auth'
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+const PDFpages = ({ file }: any) => {
+  const [numPages, setNumPages] = useState(0);
+
+  const onDocumentLoadSuccess = (pdf: any) => {
+    setNumPages(pdf?.numPages);
+    console.log("Page Count", pdf?.numPages);
+  };
+  return (
+    <>
+      <div>
+        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}></Document>
+        {numPages}
+      </div>
+    </>
+  );
+};
 
 const UploadDocument: React.FC = () => {
-  pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
   const fileRef = useRef(null) as any;
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
+  const [fileContent, setFileContent] = useState("");
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
   // const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
   const { storefile } = useApiService();
@@ -128,6 +149,9 @@ const UploadDocument: React.FC = () => {
   const handleFile = (e: any) => {
     const content = e.target.result;
     console.log("file content", content);
+    // let url = URL.createObjectURL(base64toBlob(e.target.result));
+    // setFileContent(url);
+    // setFileContent(content);
     // You can set content in state and show it in render.
     // var typedarray = new Uint8Array(e.target.result);
 
@@ -135,6 +159,16 @@ const UploadDocument: React.FC = () => {
     // task.promise.then((pdf: any) => {
     //   console.log(pdf?.numPages);
     // });
+  };
+
+  const base64toBlob = (data: any) => {
+    const bytes = decodeURIComponent(escape(atob(data)));
+    let length = bytes.length;
+    let out = new Uint8Array(length);
+    while (length--) {
+      out[length] = bytes.charCodeAt(length);
+    }
+    return new Blob([out], { type: "application/pdf" });
   };
 
   const handleFileChange = (event: any) => {
@@ -153,6 +187,7 @@ const UploadDocument: React.FC = () => {
       let fileData = new FileReader();
       fileData.onloadend = handleFile;
       fileData.readAsText(file);
+      // console.log(file);
     } else {
       setFileError(
         `${fileExtension} not allowed. Please upload document in PDF format`
@@ -356,7 +391,9 @@ const UploadDocument: React.FC = () => {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1">
-                    Total pages: {formik.values.pages}
+                    Total pages: --
+                    {/* {formik.values.pages} */}
+                    {/* <PDFpages file={fileContent} /> */}
                   </Typography>
                 </Box>
               </Grid>

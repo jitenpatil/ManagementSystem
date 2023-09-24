@@ -10,7 +10,7 @@ import {
   Stack,
   Button,
   Snackbar,
-  Alert
+  Alert,
 } from "@mui/material";
 // hooks
 import useResponsive from "../hooks/useResponsive";
@@ -21,8 +21,8 @@ import Logo from "../components/Logo";
 
 const StyledRoot = styled("div")(({ theme }) => ({
   [theme.breakpoints.up("md")]: {
-    display: "flex"
-  }
+    display: "flex",
+  },
 }));
 
 const StyledSection = styled("div")(({ theme }) => ({
@@ -32,7 +32,7 @@ const StyledSection = styled("div")(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   // boxShadow: theme.customShadows.card,
-  backgroundColor: theme.palette.background.default
+  backgroundColor: theme.palette.background.default,
 }));
 
 const StyledContent = styled("div")(({ theme }) => ({
@@ -42,7 +42,7 @@ const StyledContent = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   flexDirection: "column",
-  padding: theme.spacing(12, 0)
+  padding: theme.spacing(12, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -83,14 +83,14 @@ const AuthLayout = () => {
                   variant="h5"
                   sx={{ px: 5, mb: 4, textAlign: "center" }}
                 >
-                  Welcome
+                  {/* Welcome */}
                 </Typography>
                 <Box
                   sx={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    flexDirection: "column"
+                    flexDirection: "column",
                   }}
                 >
                   <Logo imageWidth="100px" />
@@ -98,8 +98,7 @@ const AuthLayout = () => {
                 <Typography
                   variant="h4"
                   sx={{ px: 5, mt: 1, textAlign: "center", fontWeight: "bold" }}
-                >
-                </Typography>
+                ></Typography>
               </Box>
             </Box>
             {/* <img
