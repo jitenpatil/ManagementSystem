@@ -10,56 +10,36 @@ function useApiService() {
   const config = {
     headers: {
       // "Content-Type": "multipart/form-data",
-      "x-api-key": apiKey
-    }
+      "x-api-key": apiKey,
+    },
   };
 
   //Upload API headers
   const uploadConfig = {
     headers: {
       "Content-Type": "multipart/form-data",
-      "x-api-key": apiKey
-    }
+      "x-api-key": apiKey,
+    },
   };
 
   const login = async (req: any) => {
-    return await axios.post(
-      `${apiBaseUrl}/user/login`,
-      req,
-      config
-    );
+    return await axios.post(`${apiBaseUrl}/user/login`, req, config);
   };
 
   const signup = async (req: any) => {
-    return await axios.post(
-      `${apiBaseUrl}/user/sign-up`,
-      req,
-      config
-    );
+    return await axios.post(`${apiBaseUrl}/user/sign-up`, req, config);
   };
 
   const resetpassword = async (req: any) => {
-    return await axios.post(
-      `${apiBaseUrl}/user/reset-password`,
-      req,
-      config
-    );
+    return await axios.post(`${apiBaseUrl}/user/reset-password`, req, config);
   };
 
   const sendotp = async (req: any) => {
-    return await axios.post(
-      `${apiBaseUrl}/user/send-otp`,
-      req,
-      config
-    );
+    return await axios.post(`${apiBaseUrl}/user/send-otp`, req, config);
   };
 
   const verifyotp = async (req: any) => {
-    return await axios.post(
-      `${apiBaseUrl}/user/verify-otp`,
-      req,
-      config
-    );
+    return await axios.post(`${apiBaseUrl}/user/verify-otp`, req, config);
   };
 
   const storefile = async (req: any) => {
@@ -70,13 +50,34 @@ function useApiService() {
     );
   };
 
+  const admindata = async (orderState: any) => {
+    return await axios.get(
+      `${apiBaseUrl}/admin/data?orderState=${orderState}`,
+      config
+    );
+  };
+
+  const userdata = async (email: any, type: any) => {
+    return await axios.get(
+      `${apiBaseUrl}/user/data?email=${email}&type=${type}`,
+      config
+    );
+  };
+
+  const orderstate = async (req: any) => {
+    return await axios.post(`${apiBaseUrl}/admin/order-state`, req, config);
+  };
+
   return {
     login,
     signup,
     resetpassword,
     sendotp,
     verifyotp,
-    storefile
+    storefile,
+    admindata,
+    userdata,
+    orderstate,
   };
 }
 

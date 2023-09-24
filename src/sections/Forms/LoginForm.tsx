@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import {
   Link as RouterLink,
   useNavigate,
-  useOutletContext
+  useOutletContext,
 } from "react-router-dom";
 import { useFormik, Form, FormikProvider } from "formik";
 // material
@@ -15,7 +15,7 @@ import {
   IconButton,
   InputAdornment,
   FormControlLabel,
-  Alert
+  Alert,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // component
@@ -23,8 +23,8 @@ import { LoadingButton } from "@mui/lab";
 import Iconify from "../../components/Iconify";
 import useApiService from "../../services/ApiService";
 
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { setUserAuthInfo } from '../../redux/slices/auth';
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setUserAuthInfo } from "../../redux/slices/auth";
 
 // import dummyUsers from "src/_mock/dummyUsersData";
 // import { Encrypt, decryptData } from '../../../encryptionDecryption';
@@ -49,13 +49,13 @@ export default function LoginForm() {
     email: Yup.string()
       .email("Email must be a valid email address")
       .required("Email is required"),
-    password: Yup.string().required("Password is required")
+    password: Yup.string().required("Password is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       email: "",
-      password: ""
+      password: "",
     },
     validationSchema: LoginSchema,
 
@@ -63,46 +63,42 @@ export default function LoginForm() {
       try {
         let request = {
           email: formik.values.email,
-          password: formik.values.password
+          password: formik.values.password,
         };
         const response = await login(request);
         console.log(response);
         if (response.data.status === "Success") {
+          let res = await dispatch(
+            setUserAuthInfo({
+              email: response.data?.email,
+              phoneNumber: response.data?.phone,
+              customerName: response.data?.customerName,
+              isAdmin: response.data?.isAdmin,
+              isLoggedIn: true,
+            } as any)
+          );
 
-          let res = await dispatch(setUserAuthInfo({
-            email: response.data?.email,
-            phoneNumber: response.data?.phone,
-            customerName: response.data?.customerName,
-            isLoggedIn: true
-          } as any));
-
-          if(res)
-            navigate("/upload-document", { replace: true });
+          if (res) navigate("/dashboard", { replace: true });
         }
-      } catch (err:any) {
+      } catch (err: any) {
         // console.log("error", err.response);
         setShowAlert(true);
         setSeverity("error");
         setSeverityMessage(err.response.data.message);
 
         if (err.response.data.message === "Account not verified") {
-
-          dispatch(setUserAuthInfo({
-            email: formik.values.email,
-          } as any));
+          dispatch(
+            setUserAuthInfo({
+              email: formik.values.email,
+            } as any)
+          );
         }
       }
-    }
+    },
   });
 
-  const {
-    errors,
-    touched,
-    values,
-    isSubmitting,
-    handleSubmit,
-    getFieldProps
-  } = formik;
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } =
+    formik;
 
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
@@ -155,7 +151,7 @@ export default function LoginForm() {
                     />
                   </IconButton>
                 </InputAdornment>
-              )
+              ),
             }}
             error={Boolean(touched.password && errors.password)}
             helperText={touched.password && errors.password}

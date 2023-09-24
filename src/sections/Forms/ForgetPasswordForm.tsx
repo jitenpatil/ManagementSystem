@@ -2,16 +2,17 @@ import * as Yup from "yup";
 import {
   Link as RouterLink,
   useNavigate,
-  useOutletContext
+  useOutletContext,
 } from "react-router-dom";
 import { useFormik, Form, FormikProvider } from "formik";
-import { useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 // material
 import { Stack, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import useApiService from "../../services/ApiService";
 
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { setUserAuthInfo } from '../../redux/slices/auth';
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setUserAuthInfo } from "../../redux/slices/auth";
 // component
 
 // ----------------------------------------------------------------------
@@ -20,7 +21,9 @@ export default function ForgetPasswordForm() {
   const navigate = useNavigate();
 
   // const { getUserLogin } = useLoginService();
-  const { setFlow } = useOutletContext() as any;
+  const { sendotp } = useApiService();
+  const { setFlow, setOpenSnackbar, setSnackbarMessage } =
+    useOutletContext() as any;
 
   const authValues = useAppSelector((state: any) => state.auth);
   const dispatch = useAppDispatch();
@@ -31,13 +34,32 @@ export default function ForgetPasswordForm() {
       .matches(/^[0-9]+$/, "Must be only digits")
       .min(10, "Must be exactly 10 digits")
       .max(10, "Must be exactly 10 digits")
-      .required("Phone Number is required")
+      .required("Phone Number is required"),
   });
+
+  const handleSendOtp = async (values: any) => {
+    try {
+      if (values.email && values.phoneNumber) {
+        let request = {
+          email: values.email,
+          phone: values.phoneNumber,
+        };
+        const response = await sendotp(request);
+        if (response.data.status === "Success") {
+          //Snackbar
+          setOpenSnackbar(true);
+          setSnackbarMessage("Otp sent successfully!");
+        }
+      }
+    } catch (err: any) {
+      console.log("error", err);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
       email: "",
-      phoneNumber: ""
+      phoneNumber: "",
     },
     validationSchema: ForgetPasswordSchema,
 
@@ -48,28 +70,26 @@ export default function ForgetPasswordForm() {
       //   phoneNumber: values.phoneNumber
       // });
 
-      dispatch(setUserAuthInfo({
-        email:  values.email,
-        phoneNumber: values.phoneNumber,
-      } as any));
+      dispatch(
+        setUserAuthInfo({
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+        } as any)
+      );
+      handleSendOtp(values);
       navigate("/verify");
-    }
+    },
   });
 
-  const {
-    errors,
-    touched,
-    values,
-    isSubmitting,
-    handleSubmit,
-    getFieldProps
-  } = formik;
+  const { errors, touched, values, isSubmitting, handleSubmit, getFieldProps } =
+    formik;
 
   useEffect(() => {
     if (authValues.userAuthInfo.email) {
       formik.setFieldValue("email", authValues.userAuthInfo.email);
     }
   }, [authValues.userAuthInfo.email]);
+
   return (
     <FormikProvider value={formik}>
       <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
