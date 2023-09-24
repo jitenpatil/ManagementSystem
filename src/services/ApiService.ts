@@ -50,11 +50,22 @@ function useApiService() {
     );
   };
 
-  const admindata = async () => {
+  const admindata = async (orderState: any) => {
     return await axios.get(
-      `${apiBaseUrl}/admin/data?orderState=pending`,
+      `${apiBaseUrl}/admin/data?orderState=${orderState}`,
       config
     );
+  };
+
+  const userdata = async (email: any, type: any) => {
+    return await axios.get(
+      `${apiBaseUrl}/user/data?email=${email}&type=${type}`,
+      config
+    );
+  };
+
+  const orderstate = async (req: any) => {
+    return await axios.post(`${apiBaseUrl}/admin/order-state`, req, config);
   };
 
   return {
@@ -65,6 +76,8 @@ function useApiService() {
     verifyotp,
     storefile,
     admindata,
+    userdata,
+    orderstate,
   };
 }
 

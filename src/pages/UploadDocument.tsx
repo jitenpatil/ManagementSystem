@@ -9,6 +9,7 @@ import {
   Typography,
   Modal,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
@@ -26,8 +27,9 @@ const UploadDocument: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
-  const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
+  // const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
   const { storefile } = useApiService();
+  const navigate = useNavigate();
 
   const authValues = useAppSelector((state: any) => state.auth);
 
@@ -92,8 +94,8 @@ const UploadDocument: React.FC = () => {
         // debugger;
         const response = await storefile(request);
         if (response.data.status === "Success") {
-          setSnackbarMessage(response.data.message);
-          setOpenSnackbar(true);
+          // setSnackbarMessage("Details added successfully");
+          // setOpenSnackbar(true);
           handleOpen();
         }
       } catch (err: any) {
@@ -106,7 +108,10 @@ const UploadDocument: React.FC = () => {
     formik.setFieldValue("customerName", authValues.userAuthInfo.customerName);
     formik.setFieldValue("phone", authValues.userAuthInfo.phoneNumber);
     formik.setFieldValue("email", authValues.userAuthInfo.email);
-  }, [authValues]);
+  }, [
+    authValues.userAuthInfo.customerName,
+    authValues.userAuthInfo.phoneNumber,
+  ]);
 
   const handleClick = () => {
     fileRef.current.click();
@@ -451,17 +456,24 @@ const UploadDocument: React.FC = () => {
           </Grid>
         </form>
       </Container>
-      <Modal keepMounted open={false} onClose={handleClose}>
+      <Modal keepMounted open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography
             id="keep-mounted-modal-title"
             variant="h6"
             component="h2"
-          ></Typography>
-          <Button variant="contained" sx={{ width: "100%" }}>
+            sx={{ textAlign: "center" }}
+          >
+            Document uploaded successfully
+          </Typography>
+          <Button variant="contained" sx={{ width: "100%", mt: 4 }}>
             Proceed to Pay
           </Button>
-          <Button variant="contained" sx={{ width: "100%" }}>
+          <Button
+            variant="outlined"
+            sx={{ width: "100%", mt: 1 }}
+            onClick={() => navigate("/dashboard")}
+          >
             Cancel
           </Button>
         </Box>

@@ -1,32 +1,68 @@
 import { Container } from "@mui/material";
 import { useState, useEffect } from "react";
 import {
-  Typography,
   Box,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Button,
 } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { useAppSelector } from "../redux/hooks";
 import useApiService from "../services/ApiService";
 
+const DocumentCard = ({ documentType, details }: any) => {
+  return (
+    <>
+      <Card sx={{ minWidth: 275, mt: 3 }}>
+        <CardContent>
+          <Typography variant="h6" component="div" sx={{ mb: 1 }}>
+            {documentType}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Delivery Address :{details?.address}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Creation date : {details?.creationDate}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Color Print : {details?.color}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Page Count : {details?.pageCount}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Transaction Status : {details?.transactionStatus}
+          </Typography>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Order Status : {details?.orderStatus}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button size="small">Uploaded Document</Button>
+        </CardActions>
+      </Card>
+    </>
+  );
+};
+
 const Dashboard: React.FC = () => {
   const authValues = useAppSelector((state: any) => state.auth);
-  const { admindata } = useApiService();
+  const { admindata, userdata } = useApiService();
   const [rows, setRows] = useState([]) as any;
-  const [documentType, setDocumentType] = useState("blackbook");
+  const [documentType, setDocumentType] = useState("Blackbook");
+  const [blackbookDetails, setBlackbookDetails] = useState({}) as any;
+  const [cardDetails, setCardDetails] = useState({}) as any;
 
   useEffect(() => {
     const getAdminData = async () => {
       try {
-        const response = await admindata();
+        const response = await admindata("pending");
         if (response.data.status === "Success") {
           setRows([
             ...response.data.data.map((data: any, index: number) => {
@@ -52,7 +88,37 @@ const Dashboard: React.FC = () => {
         console.log("error", err);
       }
     };
+
+    const getUserData_Blackbook = async () => {
+      try {
+        const response = await userdata(
+          authValues.userAuthInfo.email,
+          "blackbook"
+        );
+        if (response.data.status === "Success") {
+          setBlackbookDetails();
+        }
+      } catch (err: any) {
+        console.log("error", err);
+      }
+    };
+
+    const getUserData_Card = async () => {
+      try {
+        const response = await userdata(authValues.userAuthInfo.email, "card");
+        if (response.data.status === "Success") {
+          setCardDetails();
+        }
+      } catch (err: any) {
+        console.log("error", err);
+      }
+    };
+
     if (authValues.userAuthInfo.isAdmin) getAdminData();
+    if (!authValues.userAuthInfo.isAdmin) {
+      getUserData_Blackbook();
+      getUserData_Card();
+    }
   }, []);
 
   const handleChange = (e: any) => {
@@ -127,21 +193,39 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  // const rows = [
-  //   { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  //   { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  //   { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  //   { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  //   { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  //   { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  //   { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  //   { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  //   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-  // ];
-
   return (
     <>
       <Container>
+        <Typography sx={{ mb: 3, fontWeight: "bold" }} variant="h5">
+          Uploaded Documents
+        </Typography>
+        {!authValues.userAuthInfo.isAdmin && (
+          <Box>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">
+                Document Type
+              </InputLabel>
+              <Select
+                labelId="select-label"
+                id="simple-select"
+                value={documentType}
+                label="Document Type"
+                onChange={handleChange}
+              >
+                <MenuItem value={"Blackbook"}>Blackbook</MenuItem>
+                <MenuItem value={"Card"}>Card</MenuItem>
+              </Select>
+            </FormControl>
+            {documentType === "Blackbook" ? (
+              <DocumentCard
+                documentType="Blackbook"
+                details={blackbookDetails}
+              />
+            ) : (
+              <DocumentCard documentType="Card" details={cardDetails} />
+            )}
+          </Box>
+        )}
         {authValues.userAuthInfo.isAdmin && (
           <Box sx={{ height: 500, width: "100%" }}>
             <DataGrid
@@ -158,25 +242,6 @@ const Dashboard: React.FC = () => {
               disableRowSelectionOnClick
               slots={{ toolbar: GridToolbar }}
             />
-          </Box>
-        )}
-        {!authValues.userAuthInfo.isAdmin && (
-          <Box>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">
-                Document Type
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={documentType}
-                label="Document Type"
-                onChange={handleChange}
-              >
-                <MenuItem value={"blackbook"}>Blackbook</MenuItem>
-                <MenuItem value={"card"}>Card</MenuItem>
-              </Select>
-            </FormControl>
           </Box>
         )}
       </Container>
