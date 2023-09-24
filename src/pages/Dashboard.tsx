@@ -16,37 +16,84 @@ import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { useAppSelector } from "../redux/hooks";
 import useApiService from "../services/ApiService";
 
-const DocumentCard = ({ documentType, details }: any) => {
+const DocumentCard = ({ show, documentType, details }: any) => {
   return (
     <>
-      <Card sx={{ minWidth: 275, mt: 3 }}>
-        <CardContent>
-          <Typography variant="h6" component="div" sx={{ mb: 1 }}>
-            {documentType}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Delivery Address :{details?.address}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Creation date : {details?.creationDate}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Color Print : {details?.color}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Page Count : {details?.pageCount}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Transaction Status : {details?.transactionStatus}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Order Status : {details?.orderStatus}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small">Uploaded Document</Button>
-        </CardActions>
-      </Card>
+      {show ? (
+        <Card sx={{ minWidth: 275, mt: 3 }}>
+          <CardContent>
+            <Typography variant="h6" component="div" sx={{ mb: 1 }}>
+              {documentType}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Delivery Address :{details?.address}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Order date : {details?.creationDate}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Color Print : {details?.color}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Page Count : {details?.pageCount}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Price : {details?.price}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Transaction Status : {details?.transactionStatus}
+            </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              Order Status : {details?.orderStatus}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small" onClick={() => window.open(details?.link)}>
+              Uploaded Document
+            </Button>
+          </CardActions>
+        </Card>
+      ) : (
+        <Card
+          sx={{
+            minWidth: 275,
+            mt: 3,
+            textAlign: "center",
+            minHeight: "40px",
+            p: 4,
+          }}
+        >
+          <Typography>No {documentType} data</Typography>
+        </Card>
+      )}
     </>
   );
 };
@@ -58,6 +105,9 @@ const Dashboard: React.FC = () => {
   const [documentType, setDocumentType] = useState("Blackbook");
   const [blackbookDetails, setBlackbookDetails] = useState({}) as any;
   const [cardDetails, setCardDetails] = useState({}) as any;
+
+  const [showCardData, setShowCardData] = useState(false);
+  const [showBlackbookData, setShowBlackbookData] = useState(false);
 
   useEffect(() => {
     const getAdminData = async () => {
@@ -91,12 +141,32 @@ const Dashboard: React.FC = () => {
 
     const getUserData_Blackbook = async () => {
       try {
+        setShowBlackbookData(false);
         const response = await userdata(
           authValues.userAuthInfo.email,
           "blackbook"
         );
         if (response.data.status === "Success") {
-          setBlackbookDetails();
+          let blackbookDetails = response.data.data;
+
+          let documentInfo = {
+            address: [
+              blackbookDetails.address,
+              blackbookDetails.city,
+              blackbookDetails.state,
+              blackbookDetails.pincode,
+            ].join(", "),
+            creationDate: blackbookDetails.printingDataCreationTime,
+            color: blackbookDetails.color,
+            pageCount: blackbookDetails.pages,
+            price: blackbookDetails.price,
+            transactionStatus: blackbookDetails.transactionStatus.toUpperCase(),
+            orderStatus: blackbookDetails.orderState.toUpperCase(),
+            link: blackbookDetails.s3Link,
+          } as any;
+
+          setBlackbookDetails({ ...documentInfo });
+          setShowBlackbookData(true);
         }
       } catch (err: any) {
         console.log("error", err);
@@ -105,9 +175,28 @@ const Dashboard: React.FC = () => {
 
     const getUserData_Card = async () => {
       try {
+        setShowCardData(false);
         const response = await userdata(authValues.userAuthInfo.email, "card");
         if (response.data.status === "Success") {
-          setCardDetails();
+          let cardDetails = response.data.data;
+
+          let documentInfo = {
+            address: [
+              cardDetails.address,
+              cardDetails.city,
+              cardDetails.state,
+              cardDetails.pincode,
+            ].join(", "),
+            creationDate: cardDetails.printingDataCreationTime,
+            color: cardDetails.color,
+            pageCount: cardDetails.pages,
+            price: cardDetails.price,
+            transactionStatus: cardDetails.transactionStatus.toUpperCase(),
+            orderStatus: cardDetails.orderState.toUpperCase(),
+            link: blackbookDetails.s3Link,
+          } as any;
+          setCardDetails({ ...documentInfo });
+          setShowCardData(true);
         }
       } catch (err: any) {
         console.log("error", err);
@@ -188,8 +277,8 @@ const Dashboard: React.FC = () => {
 
     {
       field: "transactionStatus",
-      headerName: "Status",
-      width: 110,
+      headerName: "Transaction Status",
+      width: 150,
     },
   ];
 
@@ -218,11 +307,16 @@ const Dashboard: React.FC = () => {
             </FormControl>
             {documentType === "Blackbook" ? (
               <DocumentCard
+                show={showBlackbookData}
                 documentType="Blackbook"
                 details={blackbookDetails}
               />
             ) : (
-              <DocumentCard documentType="Card" details={cardDetails} />
+              <DocumentCard
+                show={showCardData}
+                documentType="Card"
+                details={cardDetails}
+              />
             )}
           </Box>
         )}

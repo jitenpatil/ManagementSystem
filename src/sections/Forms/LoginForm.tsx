@@ -73,6 +73,7 @@ export default function LoginForm() {
               email: response.data?.email,
               phoneNumber: response.data?.phone,
               customerName: response.data?.customerName,
+              isAdmin: response.data?.isAdmin,
               isLoggedIn: true,
             } as any)
           );

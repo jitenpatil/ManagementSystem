@@ -18,29 +18,7 @@ import useApiService from "../services/ApiService";
 import { useAppSelector } from "../redux/hooks";
 // import * as pdfjs from "pdfjs-dist/build/pdf";
 // import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-
-import { Document, Page, pdfjs } from "react-pdf";
-// import { getDocument } from 'pdfjs';
-// import { setUserAuthInfo } from '../redux/slices/auth'
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-const PDFpages = ({ file }: any) => {
-  const [numPages, setNumPages] = useState(0);
-
-  const onDocumentLoadSuccess = (pdf: any) => {
-    setNumPages(pdf?.numPages);
-    console.log("Page Count", pdf?.numPages);
-  };
-  return (
-    <>
-      <div>
-        <Document file={file} onLoadSuccess={onDocumentLoadSuccess}></Document>
-        {numPages}
-      </div>
-    </>
-  );
-};
+import pdf from "pdf-parse";
 
 const UploadDocument: React.FC = () => {
   const fileRef = useRef(null) as any;
@@ -148,7 +126,11 @@ const UploadDocument: React.FC = () => {
 
   const handleFile = (e: any) => {
     const content = e.target.result;
-    console.log("file content", content);
+
+    // pdf(content).then(function (data) {
+    //   // number of pages
+    //   console.log("AAAAAAAAAAAA", data.numpages);
+    // });
     // let url = URL.createObjectURL(base64toBlob(e.target.result));
     // setFileContent(url);
     // setFileContent(content);
@@ -159,16 +141,6 @@ const UploadDocument: React.FC = () => {
     // task.promise.then((pdf: any) => {
     //   console.log(pdf?.numPages);
     // });
-  };
-
-  const base64toBlob = (data: any) => {
-    const bytes = decodeURIComponent(escape(atob(data)));
-    let length = bytes.length;
-    let out = new Uint8Array(length);
-    while (length--) {
-      out[length] = bytes.charCodeAt(length);
-    }
-    return new Blob([out], { type: "application/pdf" });
   };
 
   const handleFileChange = (event: any) => {
@@ -188,6 +160,8 @@ const UploadDocument: React.FC = () => {
       fileData.onloadend = handleFile;
       fileData.readAsText(file);
       // console.log(file);
+
+      // let dataBuffer = fs.readFileSync(file);
     } else {
       setFileError(
         `${fileExtension} not allowed. Please upload document in PDF format`

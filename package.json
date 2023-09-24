@@ -22,6 +22,7 @@
     "csbbust": "1.0.1",
     "formik": "2.2.9",
     "loader-utils": "3.2.1",
+    "pdf-parse": "^1.1.1",
     "pdfjs": "^2.5.2",
     "pdfjs-dist": "^3.10.111",
     "react": "18.2.0",
@@ -37,6 +38,7 @@
     "yup": "1.0.2"
   },
   "devDependencies": {
+    "@types/pdf-parse": "^1.1.2",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
