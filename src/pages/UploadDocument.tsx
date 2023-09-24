@@ -13,14 +13,15 @@ import { useOutletContext } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
 import useApiService from "../services/ApiService";
 import { useAppSelector } from "../redux/hooks";
-// import * as pdfjsLib from "pdfjs-dist/build/pdf";
+import * as pdfjs from "pdfjs-dist/build/pdf";
+import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 // import { getDocument } from 'pdfjs';
 // import { setUserAuthInfo } from '../redux/slices/auth';
 
 const UploadDocument: React.FC = () => {
+  pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
   const fileRef = useRef(null) as any;
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
@@ -36,11 +37,11 @@ const UploadDocument: React.FC = () => {
 
   const validationSchema = yup.object({
     customerName: yup.string().required("Name is required"),
-    // collegeName: yup.string().when('type', {
-    //   is: "blackbook",
-    //   then: yup.string().required('College Name is required'),
-    //   otherwise: yup.string(),
-    // }),
+    collegeName: yup.string().when("type", ([type], sch) => {
+      return type === "blackbook"
+        ? sch.required("College Name is required")
+        : sch.notRequired();
+    }),
     address: yup.string().required("Address is required"),
     landmark: yup.string().required("Landmark is required"),
     city: yup.string().required("City is required"),
@@ -123,9 +124,9 @@ const UploadDocument: React.FC = () => {
     const content = e.target.result;
     console.log("file content", content);
     // You can set content in state and show it in render.
-    var typedarray = new Uint8Array(e.target.result);
+    // var typedarray = new Uint8Array(e.target.result);
 
-    // const task = pdfjsLib.getDocument(typedarray);
+    // const task = pdfjs.getDocument(typedarray);
     // task.promise.then((pdf: any) => {
     //   console.log(pdf?.numPages);
     // });
