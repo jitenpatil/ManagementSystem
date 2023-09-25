@@ -18,13 +18,34 @@ import useApiService from "../services/ApiService";
 import { useAppSelector } from "../redux/hooks";
 // import * as pdfjs from "pdfjs-dist/build/pdf";
 // import * as pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
-import pdf from "pdf-parse";
+
+import { Document, pdfjs } from "react-pdf";
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+
+const PdfPageCount = ({ file, pageCount, setPageCount }: any) => {
+  // const [numPages, setNumPages] = useState<number>();
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    // setNumPages(numPages);
+    setPageCount(numPages);
+  }
+
+  return (
+    <div>
+      <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+        {/* <Page pageNumber={pageNumber} /> */}
+      </Document>
+      Total pages: {pageCount}
+    </div>
+  );
+};
 
 const UploadDocument: React.FC = () => {
   const fileRef = useRef(null) as any;
   const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
   const [fileContent, setFileContent] = useState("");
+  const [pageCount, setPageCount] = useState(0);
   const [showFileUploadContainer, setShowFileUploadContainer] = useState(false);
   // const { setOpenSnackbar, setSnackbarMessage } = useOutletContext() as any;
   const { storefile } = useApiService();
@@ -65,7 +86,7 @@ const UploadDocument: React.FC = () => {
       collegeName: "",
       type: "blackbook",
       color: "color",
-      pages: 10,
+      pages: 0,
       email: "",
       phone: "",
       address: "",
@@ -89,12 +110,11 @@ const UploadDocument: React.FC = () => {
         let request = {
           ...values,
           color: values.color === "color" ? true : false,
+          pages: pageCount,
         };
-        // debugger;
+
         const response = await storefile(request);
         if (response.data.status === "Success") {
-          // setSnackbarMessage("Details added successfully");
-          // setOpenSnackbar(true);
           handleOpen();
         }
       } catch (err: any) {
@@ -120,27 +140,14 @@ const UploadDocument: React.FC = () => {
     setFileName("");
     setShowFileUploadContainer(false);
     fileRef.current = null;
+    setFileContent("");
     formik.setFieldValue("pdfFile", "");
     formik.setFieldValue("pages", 0);
   };
 
   const handleFile = (e: any) => {
     const content = e.target.result;
-
-    // pdf(content).then(function (data) {
-    //   // number of pages
-    //   console.log("AAAAAAAAAAAA", data.numpages);
-    // });
-    // let url = URL.createObjectURL(base64toBlob(e.target.result));
-    // setFileContent(url);
-    // setFileContent(content);
-    // You can set content in state and show it in render.
-    // var typedarray = new Uint8Array(e.target.result);
-
-    // const task = pdfjs.getDocument(typedarray);
-    // task.promise.then((pdf: any) => {
-    //   console.log(pdf?.numPages);
-    // });
+    setFileContent(content);
   };
 
   const handleFileChange = (event: any) => {
@@ -158,10 +165,7 @@ const UploadDocument: React.FC = () => {
       //Count No of pages
       let fileData = new FileReader();
       fileData.onloadend = handleFile;
-      fileData.readAsText(file);
-      // console.log(file);
-
-      // let dataBuffer = fs.readFileSync(file);
+      fileData.readAsArrayBuffer(file);
     } else {
       setFileError(
         `${fileExtension} not allowed. Please upload document in PDF format`
@@ -365,9 +369,11 @@ const UploadDocument: React.FC = () => {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1">
-                    Total pages: --
-                    {/* {formik.values.pages} */}
-                    {/* <PDFpages file={fileContent} /> */}
+                    <PdfPageCount
+                      file={fileContent}
+                      pageCount={pageCount}
+                      setPageCount={setPageCount}
+                    />
                   </Typography>
                 </Box>
               </Grid>
